@@ -388,23 +388,28 @@ const tr=document.getElementById('tTrack');
 
 <script>
 // MUSIC PLAYER
+let _tapped = false;
 window.onYouTubeIframeAPIReady = function(){
   window._ytPlayer = new YT.Player('yt-frame',{
     videoId:'LlN8MPS7KQs',
     playerVars:{autoplay:0,loop:1,playlist:'LlN8MPS7KQs',controls:0},
-    events:{onReady(e){e.target.setVolume(50);}}
+    events:{onReady(e){
+      e.target.setVolume(50);
+      if(_tapped) e.target.playVideo();
+    }}
   });
 };
 const ytScript=document.createElement('script');ytScript.src='https://www.youtube.com/iframe_api';document.head.appendChild(ytScript);
 
-// TAP ANYWHERE TO START
-const tap=document.createElement('div');
-tap.style.cssText='position:fixed;inset:0;z-index:9999;cursor:pointer';
-tap.addEventListener('click',()=>{
-  if(window._ytPlayer) window._ytPlayer.playVideo();
-  tap.remove();
-},{once:true});
-document.body.appendChild(tap);
+// START ON FIRST TOUCH/CLICK ANYWHERE
+function startMusic(){
+  _tapped=true;
+  if(window._ytPlayer && window._ytPlayer.playVideo) window._ytPlayer.playVideo();
+  document.removeEventListener('click', startMusic);
+  document.removeEventListener('touchstart', startMusic);
+}
+document.addEventListener('click', startMusic);
+document.addEventListener('touchstart', startMusic);
 </script>
 
 </body>
